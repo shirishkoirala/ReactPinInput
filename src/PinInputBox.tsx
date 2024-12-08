@@ -8,6 +8,7 @@ type PinInputBoxProps = {
 
 const PIN_MIN_VALUE = 0
 const PIN_MAX_VALUE = 9
+const BACKSPACE_KEY = "Backspace"
 
 export default function PinInputBox({ pin, pinLength, onPinChanged }): PinInputBoxProps {
     const inputRefs = useRef<HTMLInputElement[]>({})
@@ -20,7 +21,7 @@ export default function PinInputBox({ pin, pinLength, onPinChanged }): PinInputB
     const onChanged = (event, index) => {
         const value = event.target.value;
         const pinNumber = Number(value.trim())
-        
+
         if (isNaN(pinNumber) || value.length === 0) {
             return
         }
@@ -32,16 +33,31 @@ export default function PinInputBox({ pin, pinLength, onPinChanged }): PinInputB
             }
         }
     }
+
+    const onKeyDown = (event, index) => {
+        const keyboardKeyCode = event.nativeEvent.code;
+        if (keyboardKeyCode !== BACKSPACE_KEY) {
+            return
+        }
+        if (pin[index] === undefined) {
+            changePinFocus(index - 1)
+        } else {
+            onPinChanged(undefined, index)
+        }
+    }
     return (
         <>{
             Array.from({ length: pinLength }, (_, index) => {
-                return <input ref={
-                    el => {
-                        if (el) {
-                            inputRefs.current[index] = el;
+                return <input
+                    onKeyDown={(event) => onKeyDown(event, index)}
+                    key={`pin_input_${index}`}
+                    ref={
+                        el => {
+                            if (el) {
+                                inputRefs.current[index] = el;
+                            }
                         }
-                    }
-                } onChange={(event) => onChanged(event, index)} value={pin[index]} />
+                    } onChange={(event) => onChanged(event, index)} value={pin[index]} />
             })
         }</>
     );

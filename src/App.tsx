@@ -8,12 +8,14 @@ export default function App() {
   const [pin, setPin] = useState<Array<number | undefined>>(new Array(PIN_LENGTH))
 
   const onPinChanged = (pinEntry: number | null, index: number) => {
-    console.log(pinEntry)
+    const newPin = [...pin]
+    newPin[index] = pinEntry
+    setPin(newPin)
   }
-  
+
   return (
     <div className="App">
-      <PinInputBox onPinChanged={onPinChanged} pin={pin} pinLength={PIN_LENGTH}/>
+      <PinInputBox onPinChanged={onPinChanged} pin={pin} pinLength={PIN_LENGTH} />
     </div>
   );
 }
